@@ -23,7 +23,7 @@ export class AlertsService {
       chainName: event.tx.chainName,
       chainId: event.tx.chainId,
       txHash: event.tx.hash,
-      blockNumber: event.tx.blockNumber,
+      blockNumber: String(event.tx.blockNumber),
       blockTimestamp: new Date(event.tx.blockTimestamp),
       fromAddress: event.tx.from,
       toAddress: event.tx.to ?? null,

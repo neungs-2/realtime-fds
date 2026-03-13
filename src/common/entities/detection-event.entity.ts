@@ -22,7 +22,7 @@ export class DetectionEventEntity {
   txHash!: string;
 
   @Column({ type: 'bigint' })
-  blockNumber!: number;
+  blockNumber!: string;
 
   @Column({ type: 'timestamptz' })
   blockTimestamp!: Date;
