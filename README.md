@@ -68,6 +68,5 @@ curl -X POST http://localhost:3000/blockchain/mock-tx \
 
 - `src/blockchain`: EVM 리스너 및 mock ingest
 - `src/detection`: 룰 엔진 및 규칙
-- `src/alerts`: WebSocket gateway + anomaly 저장
+- `src/alerts`: anomaly 저장 + 조회 API + WebSocket gateway
 - `src/infra/redis`: Redis provider
-- `src/transactions`: 탐지 이벤트 조회 API

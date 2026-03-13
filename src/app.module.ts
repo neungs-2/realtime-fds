@@ -9,7 +9,6 @@ import { DetectionEventEntity } from './common/entities/detection-event.entity';
 import { DetectionModule } from './detection/detection.module';
 import { HealthModule } from './health/health.module';
 import { RedisModule } from './infra/redis/redis.module';
-import { TransactionsModule } from './transactions/transactions.module';
 
 @Module({
   imports: [
@@ -39,7 +38,6 @@ import { TransactionsModule } from './transactions/transactions.module';
     BlockchainModule,
     DetectionModule,
     AlertsModule,
-    TransactionsModule,
     HealthModule,
   ],
 })

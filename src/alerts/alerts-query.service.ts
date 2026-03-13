@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { DetectionEventEntity } from '../common/entities/detection-event.entity';
 
 @Injectable()
-export class TransactionsService {
+export class AlertsQueryService {
   constructor(
     @InjectRepository(DetectionEventEntity)
     private readonly detectionEventRepository: Repository<DetectionEventEntity>,
