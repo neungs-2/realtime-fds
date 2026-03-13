@@ -31,10 +31,31 @@ export class EvmListenerService implements OnModuleInit, OnModuleDestroy {
   }
 
   private async connect(): Promise<void> {
-    const wssUrl = this.configService.get<string>('EVM_WSS_URL');
+    const rawWssUrl = this.configService.get<string>('EVM_WSS_URL');
+    const wssUrl = rawWssUrl?.trim();
 
     if (!wssUrl) {
       this.logger.warn('EVM_WSS_URL is not configured. Blockchain listener is disabled.');
+      return;
+    }
+
+    if (wssUrl.includes('your-evm-node')) {
+      this.logger.warn(
+        'EVM_WSS_URL is still a placeholder value. Blockchain listener is disabled.',
+      );
+      return;
+    }
+
+    try {
+      const parsed = new URL(wssUrl);
+      if (parsed.protocol !== 'ws:' && parsed.protocol !== 'wss:') {
+        this.logger.warn(
+          `EVM_WSS_URL must start with ws:// or wss://. Received: ${parsed.protocol}`,
+        );
+        return;
+      }
+    } catch {
+      this.logger.warn('EVM_WSS_URL is not a valid URL. Blockchain listener is disabled.');
       return;
     }
 
