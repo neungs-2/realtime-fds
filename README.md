@@ -47,15 +47,14 @@ yarn start:dev
 
 ## 주요 API
 
-- `GET /health`
-- `GET /alerts?limit=50`
-- `POST /blockchain/mock-tx`
-- `GET /debug/tx-received?limit=20` (최근 수신 tx 확인)
-- `GET /debug/tx-received/:hash` (특정 tx hash 수신 여부 확인)
-
-예시:
+- `GET /health`: 애플리케이션 헬스 상태 확인
+- `GET /alerts?limit=50`: 룰에 탐지된 이상거래(alert) 목록 조회
+- `POST /blockchain/mock-tx`: 체인 없이 mock tx를 주입해 탐지 파이프라인 테스트
+- `GET /debug/tx-received?limit=20`: FDS가 최근 수신한 tx 목록 조회(최신순)
+- `GET /debug/tx-received/:hash`: 특정 tx hash가 FDS에 수신되었는지 확인
 
 ```bash
+# Example
 curl -X POST http://localhost:3000/blockchain/mock-tx \
   -H 'content-type: application/json' \
   -d '{"from":"0xabc...","to":"0xdef...","valueWei":"100000000000000000000"}'
@@ -114,6 +113,32 @@ node -e "const {ethers}=require('ethers');(async()=>{const p=new ethers.JsonRpcP
 
 - `TX_HASH=...`: 네트워크에 전파된 트랜잭션 해시
 - `MINED`: 트랜잭션이 블록에 포함되어 확정됨 (`tx.wait()` 완료)
+
+### Whale Alert 트리거 예시 (기본 100 ETH 이상)
+
+```bash
+cd /Users/logan/Blocko/realtime-fds
+node -e "const {ethers}=require('ethers');(async()=>{const p=new ethers.JsonRpcProvider('http://127.0.0.1:8545');const w=new ethers.Wallet('0xc87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3',p);const tx=await w.sendTransaction({to:'0xf17f52151EbEF6C7334FAD080c5704D77216b732',value:ethers.parseEther('101')});console.log('TX_HASH='+tx.hash);await tx.wait();console.log('MINED');})();"
+```
+
+```bash
+curl -s 'http://localhost:3000/alerts?limit=5'
+```
+
+`ruleName`이 `whale-transfer`로 나오면 탐지 성공입니다.
+
+### Rapid Outflow 트리거 예시 (기본 60초 내 20건 이상, 예시는 21건 전송)
+
+```bash
+cd /Users/logan/Blocko/realtime-fds
+node -e "const {ethers}=require('ethers');(async()=>{const p=new ethers.JsonRpcProvider('http://127.0.0.1:8545');const w=new ethers.Wallet('0xc87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3',p);const sent=[];for(let i=0;i<21;i++){const tx=await w.sendTransaction({to:'0xf17f52151EbEF6C7334FAD080c5704D77216b732',value:1n});sent.push(tx.hash);}console.log('SENT_TX_COUNT='+sent.length);})();"
+```
+
+```bash
+curl -s 'http://localhost:3000/alerts?limit=10'
+```
+
+`ruleName`이 `rapid-outflow`로 나오면 탐지 성공입니다.
 
 ## 폴더 구조
 
