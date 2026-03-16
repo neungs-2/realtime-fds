@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AlertsModule } from './alerts/alerts.module';
 import { BlockchainModule } from './blockchain/blockchain.module';
 import { DetectionEventEntity } from './common/entities/detection-event.entity';
+import { DebugModule } from './debug/debug.module';
 import { DetectionModule } from './detection/detection.module';
 import { HealthModule } from './health/health.module';
 import { RedisModule } from './infra/redis/redis.module';
@@ -36,6 +37,7 @@ import { RedisModule } from './infra/redis/redis.module';
     }),
     RedisModule,
     BlockchainModule,
+    DebugModule,
     DetectionModule,
     AlertsModule,
     HealthModule,
