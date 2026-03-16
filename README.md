@@ -69,22 +69,20 @@ curl -X POST http://localhost:3000/blockchain/mock-tx \
 
 1. Besu 네트워크 실행
 
-```bash
-cd /Users/logan/Blocko/besu-qbft-docker
-docker compose up -d
-```
+아래 Repository 참고
+> [consensys/besu-qbft-docker](https://github.com/consensys/besu-qbft-docker)
 
 2. FDS 인프라 실행
 
 ```bash
-cd /Users/logan/Blocko/realtime-fds
+cd ~/realtime-fds
 docker compose up -d
 ```
 
 3. FDS 앱 실행
 
 ```bash
-cd /Users/logan/Blocko/realtime-fds
+cd ~/realtime-fds
 yarn start:dev
 ```
 
@@ -107,7 +105,7 @@ curl -s 'http://localhost:3000/debug/tx-received?limit=20'
 `node -e`는 JavaScript를 파일 없이 즉시 실행하는 방식입니다.
 
 ```bash
-cd /Users/logan/Blocko/realtime-fds
+cd ~/realtime-fds
 node -e "const {ethers}=require('ethers');(async()=>{const p=new ethers.JsonRpcProvider('http://127.0.0.1:8545');const w=new ethers.Wallet('0xc87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3',p);const tx=await w.sendTransaction({to:'0xf17f52151EbEF6C7334FAD080c5704D77216b732',value:ethers.parseEther('1')});console.log('TX_HASH='+tx.hash);await tx.wait();console.log('MINED');})();"
 ```
 
@@ -117,7 +115,7 @@ node -e "const {ethers}=require('ethers');(async()=>{const p=new ethers.JsonRpcP
 ### Whale Alert 트리거 예시 (기본 100 ETH 이상)
 
 ```bash
-cd /Users/logan/Blocko/realtime-fds
+cd ~/realtime-fds
 node -e "const {ethers}=require('ethers');(async()=>{const p=new ethers.JsonRpcProvider('http://127.0.0.1:8545');const w=new ethers.Wallet('0xc87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3',p);const tx=await w.sendTransaction({to:'0xf17f52151EbEF6C7334FAD080c5704D77216b732',value:ethers.parseEther('101')});console.log('TX_HASH='+tx.hash);await tx.wait();console.log('MINED');})();"
 ```
 
@@ -130,8 +128,8 @@ curl -s 'http://localhost:3000/alerts?limit=5'
 ### Rapid Outflow 트리거 예시 (기본 60초 내 20건 이상, 예시는 21건 전송)
 
 ```bash
-cd /Users/logan/Blocko/realtime-fds
-node -e "const {ethers}=require('ethers');(async()=>{const p=new ethers.JsonRpcProvider('http://127.0.0.1:8545');const w=new ethers.Wallet('0xc87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3',p);const sent=[];for(let i=0;i<21;i++){const tx=await w.sendTransaction({to:'0xf17f52151EbEF6C7334FAD080c5704D77216b732',value:1n});sent.push(tx.hash);}console.log('SENT_TX_COUNT='+sent.length);})();"
+cd ~/realtime-fds
+node -e "const {ethers}=require('ethers');(async()=>{const p=new ethers.JsonRpcProvider('http://127.0.0.1:8545');const w=new ethers.Wallet('0xc87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3',p);const startNonce=await p.getTransactionCount(w.address,'pending');const sends=[];for(let i=0;i<21;i++){sends.push(w.sendTransaction({to:'0xf17f52151EbEF6C7334FAD080c5704D77216b732',value:1n,nonce:startNonce+i,gasLimit:21000n,gasPrice:1000n,type:0}));}const txs=await Promise.all(sends);console.log('SENT_TX_COUNT='+txs.length);console.log('LAST_TX_HASH='+txs[txs.length-1].hash);})();"
 ```
 
 ```bash
